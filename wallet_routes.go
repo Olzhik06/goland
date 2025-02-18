@@ -5,11 +5,13 @@ import (
 	"github.com/AskatNa/OnlineClinic/api/models"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"net/http"
 )
 
 func WalletRoutes(router *gin.Engine) {
 	routes := router.Group("/wallet")
 	{
+		routes.GET("/", WalletPageHandler)
 		routes.POST("/topup", TopUpRequestHandler)
 		routes.POST("/confirm", ConfirmTopUpHandler)
 		routes.POST("/pay", ChargePatientHandler)
@@ -88,4 +90,7 @@ func ChargePatientHandler(c *gin.Context) {
 	}
 
 	c.JSON(200, gin.H{"message": "Оплата успешна"})
+}
+func WalletPageHandler(c *gin.Context) {
+	c.HTML(http.StatusOK, "wallets.html", nil)
 }
