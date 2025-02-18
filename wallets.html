@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Кошелек</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+        }
+        .container {
+            margin-top: 100px;
+            max-width: 500px;
+        }
+        .card {
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-success fixed-top">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/">Online Clinic</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link active" href="/">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/login">Login</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/contacts">Contacts</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/wallets">Wallet</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="card">
+        <h2 class="text-center">Wallet management</h2>
+
+        <h4>Wallet replenishment</h4>
+        <input type="text" id="patientId" placeholder="Patient ID">
+        <input type="number" id="amount" placeholder="Sum">
+        <button onclick="topUpWallet()">Top up</button>
+
+        <h4>Replenishment confirmation</h4>
+        <input type="text" id="transactionId" placeholder="Transaction ID">
+        <button onclick="confirmTopUp()">Confirm</button>
+
+        <h4>Payment service</h4>
+        <input type="text" id="patientIdPay" placeholder="Patient ID">
+        <input type="number" id="amountPay" placeholder="Sum">
+        <input type="text" id="service" placeholder="Service name">
+        <button onclick="chargeWallet()">Pay</button>
+    </div>
+</div>
+
+<script>
+    async function topUpWallet() {
+        const patientId = document.getElementById("patientId").value;
+        const amount = document.getElementById("amount").value;
+
+        const response = await fetch("/wallet/topup", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ patient_id: patientId, amount: parseFloat(amount) })
+        });
+
+        const result = await response.json();
+        alert(result.message || "Ошибка пополнения");
+    }
+
+    async function confirmTopUp() {
+        const transactionId = document.getElementById("transactionId").value;
+
+        const response = await fetch("/wallet/confirm", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ transaction_id: transactionId })
+        });
+
+        const result = await response.json();
+        alert(result.message || "Ошибка подтверждения");
+    }
+
+    async function chargeWallet() {
+        const patientId = document.getElementById("patientIdPay").value;
+        const amount = document.getElementById("amountPay").value;
+        const service = document.getElementById("service").value;
+
+        const response = await fetch("/wallet/pay", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ patient_id: patientId, amount: parseFloat(amount), service: service })
+        });
+
+        const result = await response.json();
+        alert(result.message || "Ошибка списания");
+    }
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
