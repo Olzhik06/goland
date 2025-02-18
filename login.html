@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: #333;
+        }
+        input[type="email"],
+        input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+        input {
+            margin-bottom: 12px;
+        }
+
+        input:focus {
+            border-color: #4CAF50;
+            outline: none;
+        }
+
+        button:focus {
+            outline: none;
+        }
+
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-success fixed-top">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/">Online Clinic</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link active" href="index.html">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="register.html">Register</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="login.html">Login</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="contacts.html">Contacts</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="wallets.html">Wallet</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="appointment.html">Booking</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/wallets">Wallet</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<form id="loginForm">
+    <input type="email" id="loginEmail" placeholder="Email" required><br>
+    <input type="password" id="loginPassword" placeholder="Password" required><br>
+    <button type="submit">Login</button>
+</form>
+<script>
+    document.getElementById("loginForm").addEventListener("submit", async function(event) {
+        event.preventDefault();
+
+        const loginData = {
+            email: document.getElementById("loginEmail").value,
+            password: document.getElementById("loginPassword").value
+        };
+
+        try {
+            const response = await fetch("http://localhost:9000/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(loginData)
+            });
+
+            const result = await response.json();
+            console.log("Login Response:", result);
+
+            if (result.token) {
+                // Store only the raw token, without "Bearer "
+                localStorage.setItem("token", result.token.replace("Bearer ", ""));
+                console.log("Stored Token:", localStorage.getItem("token"));if (result.user && result.user.role === "doctor") {
+                    console.log("Redirecting to Doctor Profile");
+                    window.location.href = "/doctorProfile.html";
+                } else if (result.isAdmin) {
+                    console.log("Redirecting to Admin Panel");
+                    window.location.href = "/admin/";
+                } else {
+                    console.log("Redirecting to Home Page");
+                    window.location.href = "/";
+                }
+            } else {
+                alert(result.message);
+            }
+        } catch (error) {
+            console.error("Error during login:", error);
+            alert("Login request failed. Check your network connection.");
+        }
+    });</script>
+</body>
+</html>
